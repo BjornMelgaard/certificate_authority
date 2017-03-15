@@ -15,7 +15,9 @@ gem 'coffee-rails', '~> 4.2'
 gem 'jquery-rails'
 gem 'turbolinks', '~> 5'
 gem 'haml-rails'
-gem 'bootstrap-sass'
+
+gem 'bulma-rails', '~> 0.3.2'
+gem 'certificate_authority'
 
 gem 'dotenv-rails'
 
