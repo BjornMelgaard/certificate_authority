@@ -19,7 +19,6 @@ gem 'active_model_serializers'
 
 gem 'bulma-rails'
 gem 'rectify'
-gem 'dotenv-rails'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
@@ -38,6 +37,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'ffaker'
   gem 'airborne'
+  gem 'dotenv-rails'
 
   # RSpec
   gem 'rspec-rails'

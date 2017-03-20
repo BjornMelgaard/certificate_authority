@@ -1,4 +1,4 @@
-module CreateRoot
+module CreateCA
   CERT_PATH = Rails.root.join('public', 'root.crt')
   KEY_PATH  = Rails.root.join('private', 'root.key.pem')
 
@@ -21,7 +21,7 @@ module CreateRoot
       cert.not_after = cert.not_before.advance(years: 1)
       cert.public_key = keypair.public_key
 
-      cert.subject = OpenSSL::X509::Name.parse 'CN=Root CA/O=Sleepless Students/C=UA'
+      cert.subject = OpenSSL::X509::Name.parse 'CN=Sub CA/O=Sleepless Students/C=UA'
       cert.issuer = cert.subject
       ef = OpenSSL::X509::ExtensionFactory.new
       ef.subject_certificate = cert

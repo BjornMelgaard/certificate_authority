@@ -1,7 +1,8 @@
 namespace :certificate_authority do
+  # identical to example in OpenSSL Coocbook by Ivan Ristic
+
   desc 'Create root certificate (ought to be distributed among end users) '\
     'and private key (please store it in secret place offline)'
-  # root cert don't interact with anything for safety
   task create_root: :environment do
     CreateRoot.call
   end
