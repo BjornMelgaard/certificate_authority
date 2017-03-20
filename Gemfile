@@ -15,10 +15,10 @@ gem 'coffee-rails', '~> 4.2'
 gem 'jquery-rails'
 gem 'turbolinks', '~> 5'
 gem 'haml-rails'
+gem 'active_model_serializers'
 
-gem 'bulma-rails', '~> 0.3.2'
-gem 'certificate_authority'
-
+gem 'bulma-rails'
+gem 'rectify'
 gem 'dotenv-rails'
 
 group :development do
@@ -37,6 +37,7 @@ group :development, :test do
 
   gem 'factory_girl_rails'
   gem 'ffaker'
+  gem 'airborne'
 
   # RSpec
   gem 'rspec-rails'
