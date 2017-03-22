@@ -1,18 +1,21 @@
 module CreateCertificates
   class << self
     def call
-      root_cert, root_key = generate(:root)
-
-      store_cert('root.crt', root_cert)
-      store_private_key('root.key.pem', root_key)
-
-      sub_cert, sub_key = generate_subca(root_cert)
-      store_cert('subca.crt', sub_cert)
-      store_private_key('subca.key.pem', sub_key)
+      root_data = generate_and_store('root')
+      generate_and_store('subca', root_data)
+      generate_and_store('ocsp', root_data)
     end
 
-    def generate(type, parent = nil)
-      config = config(type)
+    def generate_and_store(name, parent_data = nil)
+      cert, priv_key = generate(name, parent_data)
+      store_cert("#{name}.crt", cert)
+      store_private_key("#{name}.key.pem", priv_key)
+      [cert, priv_key]
+    end
+
+    def generate(name, parent_data = nil)
+      parent_cert, parent_priv_key = parent_data
+      conf = config[name]
       keypair = OpenSSL::PKey::RSA.new(2048)
 
       cert = OpenSSL::X509::Certificate.new
@@ -22,22 +25,22 @@ module CreateCertificates
       cert.not_after = cert.not_before.advance(years: 1)
       cert.public_key = keypair.public_key
 
-      cert.subject = OpenSSL::X509::Name.parse config(type).distinguished_name
-      cert.issuer = parent.name || cert.subject
+      cert.subject = OpenSSL::X509::Name.parse conf['distinguished_name']
+      cert.issuer = parent_cert&.subject || cert.subject
 
       ef = OpenSSL::X509::ExtensionFactory.new # why do we need factory?
       ef.subject_certificate = cert
-      ef.issuer_certificate = parent || cert
+      ef.issuer_certificate = parent_cert || cert
 
-      config[:critical_extensions].each do |oid, value|
+      conf['critical_extensions'].each do |oid, value|
         cert.add_extension ef.create_extension(oid, value, true)
       end
 
-      config[:non_critical_extensions].each do |oid, value|
+      conf['non_critical_extensions'].each do |oid, value|
         cert.add_extension ef.create_extension(oid, value, false)
       end
 
-      cert.sign(keypair, OpenSSL::Digest::SHA256.new)
+      cert.sign(parent_priv_key || keypair, OpenSSL::Digest::SHA256.new)
       [cert, keypair]
     end
 
@@ -56,8 +59,8 @@ module CreateCertificates
 
     def config
       @config ||= begin
-        path = Root.join('lib', 'certificates.yaml.erb')
-        YAML.safe_load(ERB.new(File.read(path).result))
+        path = Rails.root.join('config', 'certificates.yaml.erb')
+        YAML.safe_load(ERB.new(File.read(path)).result)
       end
     end
   end
