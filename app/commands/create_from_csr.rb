@@ -5,8 +5,9 @@ class CreateFromCsr < Rectify::Command
 
   def call
     broadcast(:invalid, ['Invalid csr']) unless set_csr
-    set_openssl_certificate
+    set_certificate
 
+    Certificate.create(pem: @cert.to_pem, serial: @cert.serial)
     broadcast(:ok)
   end
 
@@ -15,16 +16,15 @@ class CreateFromCsr < Rectify::Command
   def set_csr
     @csr = OpenSSL::X509::Request.new(@params[:csr])
     @csr.verify(@csr.public_key)
-  rescue OpenSSL::X509::RequestError => e
-    p e
-    false
+  # rescue OpenSSL::X509::RequestError
+  #   false
   end
 
-  def set_openssl_certificate
-    cert = OpensslShim::Sertificate.new(:server, parent: subca)
-    cert.subject     = @csr.subject
-    cert.public_key  = @csr.public_key
-    cert.sign!
-    cert
+  def set_certificate
+    @cert = CA::Certificate.from_csr(@csr)
+    @cert.extensions = ExtensionsHolder.extensions_for(:server)
+    @cert.parent = issuer
+    @cert.sign!
+    @cert
   end
 end

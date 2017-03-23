@@ -1,6 +1,10 @@
 describe 'certificate_authority:populate_ca' do
   include_context 'rake'
 
+  def get_cert_and_key(role)
+    [Storage.load_cert(role), Storage.load_private_key(role)]
+  end
+
   before do
     public_private = %w(public private)
 
@@ -18,7 +22,7 @@ describe 'certificate_authority:populate_ca' do
     end
   end
 
-  it '...' do
+  it 'should generate valid certs and keys like in OpenSSL Cookbook' do
     subject.invoke
 
     root_cert, root_key   = get_cert_and_key('root')

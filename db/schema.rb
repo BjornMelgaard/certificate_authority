@@ -16,8 +16,8 @@ ActiveRecord::Schema.define(version: 20170319132001) do
   enable_extension "plpgsql"
 
   create_table "certificates", force: :cascade do |t|
-    t.text     "cert"
-    t.integer  "serial"
+    t.text     "pem"
+    t.string   "serial"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

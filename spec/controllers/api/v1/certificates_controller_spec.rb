@@ -10,7 +10,7 @@ RSpec.describe Api::V1::CertificatesController, type: :controller do
       end.to change(Certificate, :count).by(1)
 
       expect(response).to be_success
-      expect(response.response_code).to eq(201)
+      expect(response.response_code).to eq(200)
     end
   end
 end
