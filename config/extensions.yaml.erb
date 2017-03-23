@@ -1,31 +1,28 @@
 root:
-  distinguished_name: 'CN=Root CA/O=Sleepless Students/C=UA'
-  critical_extensions:
+  critical:
     basicConstraints: 'CA:TRUE'
     keyUsage:         'keyCertSign,cRLSign'
-  non_critical_extensions:
+  non_critical:
     subjectKeyIdentifier: 'hash'
 
 subca:
-  distinguished_name: 'CN=Sub CA/O=Sleepless Students/C=UA'
-  critical_extensions:
+  critical:
     basicConstraints: 'CA:TRUE,pathlen:0'
     keyUsage:         'keyCertSign,cRLSign'
-  non_critical_extensions:
+  non_critical:
     subjectKeyIdentifier:   'hash'
     extendedKeyUsage:       'clientAuth,serverAuth'
     authorityKeyIdentifier: 'keyid:always'
     authorityInfoAccess:    'caIssuers;URI.0=<%= ENV['AIA_URL'] %>,OCSP;URI.0=<%= ENV['OCSP_URL'] %>'
     crlDistributionPoints:  'URI.0=<%= ENV['CRL_URL'] %>'
     # XXX what the weird notation, had to change `IP.0=` to `IP.0:`
-    nameConstraints:        'excluded;IP.0:0.0.0.0/0.0.0.0,excluded;IP.1:0:0:0:0:0:0:0:0/0:0:0:0:0:0:0:0'
+    nameConstraints:        'excluded;IP:0.0.0.0/0.0.0.0,excluded;IP:0:0:0:0:0:0:0:0/0:0:0:0:0:0:0:0'
 
 ocsp:
-  distinguished_name: 'CN=OCSP Root Responder/O=Sleepless Students/C=UA'
-  critical_extensions:
+  critical:
     basicConstraints: 'CA:false'
     keyUsage:         'digitalSignature'
-  non_critical_extensions:
+  non_critical:
     authorityKeyIdentifier: 'keyid:always'
     extendedKeyUsage:       'OCSPSigning'
     noCheck:                'yes'

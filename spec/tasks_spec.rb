@@ -1,30 +1,21 @@
-describe 'certificate_authority:create_certificates' do
+describe 'certificate_authority:populate_ca' do
   include_context 'rake'
 
-  # redirect to tmp
   before do
-    FileUtils.mkdir_p Rails.root.join('tmp', 'public')
-    FileUtils.mkdir_p Rails.root.join('tmp', 'private')
+    public_private = %w(public private)
 
+    # clear
+    public_private_tmp = public_private.map { |pp| Rails.root.join('tmp', pp) }
+    public_private_tmp.each do |dir|
+      FileUtils.rm_rf(dir)
+      FileUtils.mkdir_p dir
+    end
+
+    # redirect
     allow_any_instance_of(Pathname).to receive(:join).and_wrap_original do |m, *args|
-      args.unshift('tmp') if %w(public private).include? args[0]
+      args.unshift('tmp') if public_private.include? args[0]
       m.call(*args)
     end
-  end
-
-  # helpers
-  def get_cert(name)
-    path = Rails.root.join('public', "#{name}.crt")
-    OpenSSL::X509::Certificate.new File.read(path)
-  end
-
-  def get_key(name)
-    path = Rails.root.join('private', "#{name}.key.pem")
-    OpenSSL::PKey::RSA.new File.read(path), ENV['PASSWORD']
-  end
-
-  def get_cert_and_key(name)
-    [get_cert(name), get_key(name)]
   end
 
   it '...' do

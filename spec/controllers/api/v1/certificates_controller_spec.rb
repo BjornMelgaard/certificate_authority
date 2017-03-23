@@ -7,7 +7,7 @@ RSpec.describe Api::V1::CertificatesController, type: :controller do
     it 'responds with success when given name and subject' do
       expect do
         post :create, params: { csr: csr }, as: :json
-      end.to chenge(Certificate.count).by(1)
+      end.to change(Certificate, :count).by(1)
 
       expect(response).to be_success
       expect(response.response_code).to eq(201)

@@ -19,6 +19,7 @@ gem 'active_model_serializers'
 
 gem 'bulma-rails'
 gem 'rectify'
+gem 'hashie'
 
 group :development do
   gem 'web-console', '>= 3.3.0'

@@ -1,6 +1,6 @@
 namespace :certificate_authority do
   desc 'Create certificates and private keys by recept in `OpenSSL Cookbook`'
-  task create_certificates: :environment do
-    CreateCertificates.call
+  task populate_ca: :environment do
+    PopulateCA.call
   end
 end
