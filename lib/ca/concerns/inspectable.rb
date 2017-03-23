@@ -1,6 +1,6 @@
 module Inspectable
   def inspect
-    <<~HEREDOC
+    <<~HEREDOC.rstrip!
       Certificate: role=#{role},
                    subject=#{subject},
                    issuer=#{issuer},

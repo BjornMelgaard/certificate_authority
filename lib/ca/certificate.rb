@@ -7,10 +7,10 @@ module CA
     attr_accessor :parent, :private_key
 
     def self.from_csr(csr)
-      decorated = new
-      decorated.subject    = csr.subject
-      decorated.public_key = csr.public_key
-      decorated
+      new.tap do |cert|
+        cert.subject    = csr.subject
+        cert.public_key = csr.public_key
+      end
     end
 
     def self.from_existing(cert, private_key)
@@ -26,14 +26,14 @@ module CA
       __getobj__.not_after = __getobj__.not_before.advance(years: 1)
     end
 
+    def selfsigned?
+      @parent.nil?
+    end
+
     def sign!
       validate!
       __getobj__.issuer = selfsigned? ? __getobj__.subject : parent.subject
       __getobj__.sign(signing_key, OpenSSL::Digest::SHA256.new)
-    end
-
-    def selfsigned?
-      @parent.nil?
     end
 
     def signing_key
