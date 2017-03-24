@@ -1,5 +1,13 @@
-<% issuer_info = "caIssuers;URI.0=#{ENV['AIA_URL']},OCSP;URI.0=#{ENV['OCSP_URL']}" %>
-<% crl_info = "URI.0=#{ENV['CRL_URL']}" %>
+<%
+def issuer_info(issuer_name)
+  [
+    "caIssuers;URI.0=#{ENV['DOMAIN']}/#{issuer_name}.crt",
+    "OCSP;URI.0=#{ENV['DOMAIN']}"
+  ].join(',')
+end
+%>
+# TODO: not implemented
+<% crl_info = "URI.0=#{ENV['DOMAIN']}" %>
 
 root:
   critical:
@@ -16,7 +24,7 @@ subca:
     subjectKeyIdentifier:   'hash'
     extendedKeyUsage:       'clientAuth,serverAuth'
     authorityKeyIdentifier: 'keyid:always'
-    authorityInfoAccess:    <%= issuer_info %>
+    authorityInfoAccess:    <%= issuer_info('root') %>
     crlDistributionPoints:  <%= crl_info %>
     # XXX what the weird notation, had to change `IP.0=` to `IP.0:`
     nameConstraints:        'excluded;IP:0.0.0.0/0.0.0.0,excluded;IP:0:0:0:0:0:0:0:0/0:0:0:0:0:0:0:0'
@@ -38,7 +46,7 @@ server:
     subjectKeyIdentifier:   'hash'
     extendedKeyUsage:       'clientAuth,serverAuth'
     authorityKeyIdentifier: 'keyid:always'
-    authorityInfoAccess:    <%= issuer_info %>
+    authorityInfoAccess:    <%= issuer_info('subca') %>
     crlDistributionPoints:  <%= crl_info %>
 
 client:
@@ -49,6 +57,6 @@ client:
     subjectKeyIdentifier:   'hash'
     extendedKeyUsage:       'clientAuth'
     authorityKeyIdentifier: 'keyid:always'
-    authorityInfoAccess:    <%= issuer_info %>
+    authorityInfoAccess:    <%= issuer_info('subca') %>
     crlDistributionPoints:  <%= crl_info %>
 

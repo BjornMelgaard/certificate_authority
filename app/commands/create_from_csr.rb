@@ -7,8 +7,8 @@ class CreateFromCsr < Rectify::Command
     broadcast(:invalid, ['Invalid csr']) unless set_csr
     set_certificate
 
-    Certificate.create(pem: @cert.to_pem, serial: @cert.serial)
-    broadcast(:ok)
+    cert = Certificate.create(pem: @cert.to_pem, serial: @cert.serial)
+    broadcast(:ok, cert)
   end
 
   private

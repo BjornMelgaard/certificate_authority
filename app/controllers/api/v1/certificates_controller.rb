@@ -4,8 +4,8 @@ class Api::V1::CertificatesController < ApplicationController
       on(:invalid) do |errors|
         render json: { errors: errors }, status: :unprocessable_entity
       end
-      on(:ok) do |id, pem|
-        render json: { id: id, pem: pem }
+      on(:ok) do |cert|
+        render json: cert.slice(:serial, :pem)
       end
     end
   end

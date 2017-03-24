@@ -40,5 +40,9 @@ describe 'certificate_authority:populate_ca' do
     expect(root_cert.verify(root_cert.public_key)).to  eq true
     expect(subca_cert.verify(root_cert.public_key)).to eq true
     expect(ocsp_cert.verify(root_cert.public_key)).to  eq true
+
+    authorityInfoAccess = subca_cert.extensions.find { |ext| ext.oid == 'authorityInfoAccess' }
+    expected = "CA Issuers - URI://localhost:3000/root.crt\nOCSP - URI://localhost:3000\n"
+    expect(authorityInfoAccess.value).to eq expected
   end
 end
