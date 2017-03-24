@@ -15,7 +15,7 @@ describe 'certificate_authority:populate_ca' do
       FileUtils.mkdir_p dir
     end
 
-    # redirect
+    # redirect to trash if starts with public or private
     allow_any_instance_of(Pathname).to receive(:join).and_wrap_original do |m, *args|
       args.unshift('tmp') if public_private.include? args[0]
       m.call(*args)
@@ -30,7 +30,7 @@ describe 'certificate_authority:populate_ca' do
     ocsp_cert, ocsp_key   = get_cert_and_key('ocsp')
 
     certs = [root_cert, subca_cert, ocsp_cert]
-    keys = [root_key, subca_key, ocsp_key]
+    keys  = [root_key, subca_key, ocsp_key]
     certs_and_keys = certs.zip(keys)
 
     certs_and_keys.each { |cert, key| expect(cert.check_private_key(key)).to be true }

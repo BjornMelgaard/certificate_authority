@@ -23,7 +23,7 @@ class CertificateGenerator
 
   def sign_by!(parent_cert, parent_key)
     @certificate.issuer = parent_cert.subject
-    generate_key_material unless certificate_has_public_key?
+    generate_key_material unless certificate_has_public_key? # can be added from_csr
     add_extensions(parent_cert)
     validate!
     sign(parent_key)

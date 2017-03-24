@@ -11,7 +11,8 @@ class CreateFromCsr < Rectify::Command
     p7chain.type = 'signed'
     p7chain.certificates = [@certificate, subca_cert]
 
-    broadcast(:ok, p7chain, store_certificate)
+    new_cert = create_certificate
+    broadcast(:ok, p7chain, new_cert)
   end
 
   private
@@ -30,7 +31,7 @@ class CreateFromCsr < Rectify::Command
     @certificate = generator.certificate
   end
 
-  def store_certificate
+  def create_certificate
     Certificate.create(pem: @certificate.to_pem, serial: @certificate.serial)
   end
 end
