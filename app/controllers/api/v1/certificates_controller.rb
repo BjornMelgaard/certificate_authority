@@ -4,8 +4,8 @@ class Api::V1::CertificatesController < ApplicationController
       on(:invalid) do |errors|
         render json: { errors: errors }, status: :unprocessable_entity
       end
-      on(:ok) do |cert|
-        render json: cert.slice(:serial, :pem)
+      on(:ok) do |p7chain, certificate|
+        render json: { pem: p7chain.to_pem, serial: certificate.serial }
       end
     end
   end

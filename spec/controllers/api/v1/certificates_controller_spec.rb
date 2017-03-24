@@ -9,11 +9,12 @@ RSpec.describe Api::V1::CertificatesController, type: :controller do
 
       expect(response).to be_success
       expect_json_types(pem: :string, serial: :string)
-      # pem = json_body[:pem]
-      # cert = OpenSSL::X509::Certificate.new pem
-      # subca_cert = load_authority_cert_by_http(cert)
-      # root_cert = load_authority_cert_by_http(subca_cert)
-      # expect(cert.verify(root_cert.public_key)).to eq true
+
+      require 'pry'; ::Kernel.binding.pry;
+      p7chain = OpenSSL::PKCS7.new(json_body[:pem])
+      subca_cert = load_authority_cert_by_http(cert)
+      root_cert = load_authority_cert_by_http(subca_cert)
+      expect(cert.verify(root_cert.public_key)).to eq true
     end
   end
 end

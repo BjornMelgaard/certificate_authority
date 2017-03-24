@@ -7,24 +7,30 @@ class CreateFromCsr < Rectify::Command
     broadcast(:invalid, ['Invalid csr']) unless set_csr
     set_certificate
 
-    cert = Certificate.create(pem: @cert.to_pem, serial: @cert.serial)
-    broadcast(:ok, cert)
+    p7chain = OpenSSL::PKCS7.new
+    p7chain.type = 'signed'
+    p7chain.certificates = [@certificate, subca_cert]
+
+    broadcast(:ok, p7chain, store_certificate)
   end
 
   private
 
   def set_csr
-    @csr = OpenSSL::X509::Request.new(@params[:csr])
-    @csr.verify(@csr.public_key)
-  # rescue OpenSSL::X509::RequestError
-  #   false
+    csr = OpenSSL::X509::Request.new(@params[:csr])
+    return false unless csr.verify(csr.public_key)
+    @csr = csr
+  rescue OpenSSL::X509::RequestError
+    return false
   end
 
   def set_certificate
-    @cert = CA::Certificate.from_csr(@csr)
-    @cert.extensions = ExtensionsHolder.extensions_for(:server)
-    @cert.parent = issuer
-    @cert.sign!
-    @cert
+    generator = CertificateGenerator.from_csr(:server, @csr)
+    generator.sign_by!(subca_cert, subca_key)
+    @certificate = generator.certificate
+  end
+
+  def store_certificate
+    Certificate.create(pem: @certificate.to_pem, serial: @certificate.serial)
   end
 end
