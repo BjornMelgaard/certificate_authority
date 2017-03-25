@@ -1,13 +1,12 @@
 <%
 def issuer_info(issuer_name)
   [
-    "caIssuers;URI.0=#{ENV['DOMAIN']}/#{issuer_name}.crt",
-    "OCSP;URI.0=#{ENV['DOMAIN']}"
+    "caIssuers;URI.0 = #{ENV['DOMAIN']}/#{issuer_name}.crt",
+    "OCSP;URI.0 = #{ENV['DOMAIN']}"
   ].join(',')
 end
 %>
-# TODO: not implemented
-<% crl_info = "URI.0=#{ENV['DOMAIN']}" %>
+<% crl_info = "URI.0 = #{ENV['DOMAIN']}" %>
 
 root:
   critical:
@@ -60,3 +59,13 @@ client:
     authorityInfoAccess:    <%= issuer_info('subca') %>
     crlDistributionPoints:  <%= crl_info %>
 
+developer:
+  critical:
+    basicConstraints: 'CA:false'
+    keyUsage:         'digitalSignature,keyEncipherment,dataEncipherment,nonRepudiation'
+  non_critical:
+    subjectKeyIdentifier:   'hash'
+    extendedKeyUsage:       'clientAuth,emailProtection,codeSigning'
+    authorityKeyIdentifier: 'keyid:always'
+    authorityInfoAccess:    <%= issuer_info('subca') %>
+    crlDistributionPoints:  <%= crl_info %>

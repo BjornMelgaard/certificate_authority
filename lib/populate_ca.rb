@@ -9,7 +9,7 @@ module PopulateCA
     def generate_and_store(role, common_name, parent_data = nil)
       distinguished_name = "CN=#{common_name}/O=Sleepless Students/C=UA"
 
-      generator = CertificateGenerator.new(role)
+      generator = CertificateFactory.new(role)
       generator.subject = OpenSSL::X509::Name.parse distinguished_name
 
       if parent_data.nil?

@@ -5,14 +5,10 @@ class CreateFromCsr < Rectify::Command
 
   def call
     broadcast(:invalid, ['Invalid csr']) unless set_csr
-    set_certificate
+    generate_certificate
+    save_certificate
 
-    p7chain = OpenSSL::PKCS7.new
-    p7chain.type = 'signed'
-    p7chain.certificates = [@certificate, subca_cert]
-
-    new_cert = create_certificate
-    broadcast(:ok, p7chain, new_cert)
+    broadcast(:ok, certificate_chain)
   end
 
   private
@@ -25,13 +21,17 @@ class CreateFromCsr < Rectify::Command
     return false
   end
 
-  def set_certificate
-    generator = CertificateGenerator.from_csr(:server, @csr)
+  def generate_certificate
+    generator = CertificateFactory.from_csr(:server, @csr)
     generator.sign_by!(subca_cert, subca_key)
     @certificate = generator.certificate
   end
 
-  def create_certificate
-    Certificate.create(pem: @certificate.to_pem, serial: @certificate.serial)
+  def save_certificate
+    Certificate.create_from_certificate(@certificate)
+  end
+
+  def certificate_chain
+    [@certificate, subca_cert].map(&:to_pem)
   end
 end

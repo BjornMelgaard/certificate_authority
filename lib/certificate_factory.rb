@@ -1,4 +1,4 @@
-class CertificateGenerator
+class CertificateFactory
   class RequiredAttribute < ::StandardError
     def initialize(attribute)
       super "#{attribute} attribute is required"
@@ -30,7 +30,8 @@ class CertificateGenerator
   end
 
   def selfsign!
-    generate_key_material
+    @certificate.issuer = @certificate.subject
+    generate_key_material # we dont expect that from_csr can be selfsigned
     add_extensions
     validate!
     sign
@@ -39,9 +40,8 @@ class CertificateGenerator
   private
 
   def generate_key_material
-    keypair = OpenSSL::PKey::RSA.new(2048)
-    @private_key = keypair
-    @certificate.public_key = keypair.public_key
+    @private_key = OpenSSL::PKey::RSA.new(2048)
+    @certificate.public_key = @private_key.public_key
   end
 
   def certificate_has_public_key?
@@ -51,9 +51,12 @@ class CertificateGenerator
   end
 
   def validate!
-    attrs = %i(subject issuer public_key version not_before not_after serial)
-    attrs.each { |attr| raise RequiredAttribute, attr unless @certificate.send(attr) }
+    %i(version not_before not_after serial)
+      .each { |attr| raise RequiredAttribute, attr unless @certificate.send(attr) }
+    %i(subject issuer)
+      .each { |dn| raise RequiredAttribute, dn if @certificate.send(dn).to_s.blank? }
     raise RequiredAttribute, :extensions unless @certificate.extensions.any?
+    raise RequiredAttribute, :public_key unless certificate_has_public_key?
   end
 
   def cert_set_defaults
