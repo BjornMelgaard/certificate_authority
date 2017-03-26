@@ -1,1 +1,10 @@
-@import "bulma"
+@import 'https://fonts.googleapis.com/css?family=Montserrat:400,700|Quicksand:700';
+@import "font-awesome";
+@import "variables";
+@import "bulma";
+@import "header";
+
+main.container {
+  margin-top: 3.25rem;
+}
+

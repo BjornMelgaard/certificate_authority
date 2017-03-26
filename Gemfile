@@ -20,6 +20,8 @@ gem 'active_model_serializers'
 gem 'bulma-rails'
 gem 'rectify'
 gem 'hashie'
+gem 'font-awesome-rails'
+gem 'openssl-extensions', require: 'openssl-extensions/all'
 
 group :development do
   gem 'web-console', '>= 3.3.0'

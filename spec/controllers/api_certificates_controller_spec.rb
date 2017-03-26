@@ -18,4 +18,36 @@ RSpec.describe Api::V1::CertificatesController, type: :controller do
       assert store.verify(developer_cert, [subca_cert])
     end
   end
+
+  describe '#revoke' do
+    it 'revoke valid cert' do
+      cert = create :certificate
+      post :revoke, params: { serial: cert.serial }, as: :json
+
+      cert.reload
+
+      expect(cert.status).to eq Certificate::STATUS_REVOKED
+      expect(cert.reason).to eq Certificate::REVOKED_STATUS_UNSPECIFIED
+    end
+
+    it 'error if already revoked' do
+      cert = create :certificate,
+                    status: Certificate::STATUS_REVOKED
+
+      expect do
+        post :revoke, params: { serial: cert.serial }, as: :json
+      end.not_to change { [cert.status, cert.reason] }
+
+      expect(response).not_to be_success
+      expect_json_types(errors: :array_of_strings)
+    end
+
+    it 'error if invalid serial' do
+      post :revoke, params: { serial: 'asfd' }, as: :json
+
+      expect(response).not_to be_success
+      expect_json_types(errors: :array_of_strings)
+    end
+  end
+
 end

@@ -50,6 +50,8 @@ guard 'livereload' do
 
   # file needing a full reload of the page anyway
   watch(%r{app/views/.+\.(#{rails_view_exts * '|'})$})
+  watch(%r{app/preseners/*})
+  watch(%r{app/decorators/*})
   watch(%r{app/helpers/.+\.rb})
   watch(%r{config/locales/.+\.yml})
 end

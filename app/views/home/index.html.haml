@@ -1,12 +1,11 @@
-%h1 Listing certificates
+%h1.title Listing certificates
 
-%table
+%table.table.is-striped
   %thead
     %tr
-      %th Cert
       %th Serial
-      %th
-      %th
+      %th Applicant
+      %th Issuance date
       %th
 
   %tbody
@@ -15,6 +14,6 @@
         %td= certificate.serial
         %td= certificate.name
         %td= certificate.date
-        %td= certificate.status
+        %td= certificate.revoke_button
 
 %br

@@ -21,6 +21,7 @@ Bundler.require(*Rails.groups)
 module CertificateAuthority
   class Application < Rails::Application
     config.autoload_paths << Rails.root.join('lib')
+    config.autoload_paths << Rails.root.join('app', 'decocators', 'concerns')
     config.middleware.use OcspMiddleware
 
     # Settings in config/environments/* take precedence over those specified here.

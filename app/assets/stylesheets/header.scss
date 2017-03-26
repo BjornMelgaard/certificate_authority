@@ -1,0 +1,49 @@
+.nav {
+  background-color: $grey-dark;
+  position: static;
+  font-family: $font-montserrat;
+
+  .container {
+    position: static;
+
+    @include until($desktop) {
+      width: 100%;
+    }
+  }
+
+  .logo {
+    position: absolute;
+    display: flex;
+    margin-left: 3rem;
+    height: $nav-height + $logo-bottom-height + 0.15rem;
+    width: $nav-height - 0.5rem;
+    background-color: $tomato;
+    border-bottom: $logo-bottom-height solid $tomatoer;
+    align-items: center;
+    justify-content: center;
+    i {
+      color: white;
+    }
+    &:after {
+      position: absolute;
+      content: attr(title);
+      color: white;
+      left: 85px;
+      font-size: large;
+      white-space: nowrap;
+    }
+  }
+
+  .slogan {
+    color: $grey-light;
+    font-style: italic;
+    font-size: small;
+    margin-right: 4rem;
+    justify-self: flex-end;
+    align-self: center;
+
+    @include mobile {
+      display: none;
+    }
+  }
+}

@@ -8,11 +8,32 @@ class Certificate < ApplicationRecord
   validates :pem, presence: true
   validates :serial, presence: true
 
+  serialize :cert, CertificateSerializer
+
   def self.create_from_certificate(cert)
     create(pem: cert.to_pem, serial: cert.serial)
   end
 
+  def store(cert)
+    self.pem    = cert.to_pem
+    self.serial = cert.serial
+  end
+
   def cert
     @cert ||= OpenSSL::X509::Certificate.new(pem)
+  end
+
+  delegate :version,
+           :not_before,
+           :not_after,
+           :serial,
+           :subject,
+           :issuer,
+           :extensions,
+           :public_key,
+           to: :cert
+
+  def revoked?
+    status == STATUS_REVOKED
   end
 end

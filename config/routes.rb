@@ -3,7 +3,8 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
-      resources :certificates, only: %i(create)
+      resources :certificates, param: :serial, only: %i(create)
+      post '/certificates/:serial/revoke', to: 'certificates#revoke', as: :certificate_revoke
     end
   end
 end

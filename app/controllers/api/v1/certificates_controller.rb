@@ -9,4 +9,15 @@ class Api::V1::CertificatesController < ApplicationController
       end
     end
   end
+
+  def revoke
+    Revoke.call(params) do
+      on(:invalid) do |errors|
+        render json: { errors: errors }, status: :unprocessable_entity
+      end
+      on(:ok) do
+        render json: {  }
+      end
+    end
+  end
 end

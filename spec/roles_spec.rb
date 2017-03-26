@@ -11,7 +11,7 @@ describe 'Roles' do
 
   context 'developer' do
     it 'have right OCSP URI' do
-      ocsp_url = get_ocsp_url(@developer_cert)
+      ocsp_url = @developer_cert.authority_info_access.split("\n").last
       expect(ocsp_url).to eq 'OCSP - URI://localhost:3000'
     end
 

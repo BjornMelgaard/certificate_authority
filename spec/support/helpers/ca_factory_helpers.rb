@@ -1,5 +1,5 @@
 module CertificateFactoryHelpers
-  def ca_factory_generate(role, parent_data = nil)
+  def ca_factory_generate(role, parent_data = nil, name = nil)
     name = role.to_s.titleize
     distinguished_name = "CN=#{name}/O=#{name} Org/C=UA"
 
@@ -18,8 +18,4 @@ end
 
 RSpec.configure do |config|
   config.include CertificateFactoryHelpers
-end
-
-if defined? FactoryGirl
-  FactoryGirl::SyntaxRunner.send(:include, CertificateFactoryHelpers)
 end

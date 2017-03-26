@@ -1,2 +1,3 @@
-Rake::Task['certificate_authority:create_root'].invoke
-# Rake::Task['certificate_authority:create_ca'].invoke
+Rake::Task['certificate_authority:populate_ca'].invoke
+
+FactoryGirl.create_list :certificate, 10
