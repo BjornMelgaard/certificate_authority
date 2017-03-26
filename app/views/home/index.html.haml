@@ -2,13 +2,20 @@
 .content
   %ol
     %li
+      Download
+      %strong Root Certificate
+    %li
       Create
       %strong Certificate Signing Request
       %blockquote openssl req -new -newkey rsa:2048 -subj "/C=UA/O=My Org/CN=My name" -keyout myprivate.key -out mysigningrequest.csr
     %li
       Upload
       %strong Certificate Signing Request
+      and get chain of certificates
       %blockquote wget --header="Content-Type: text/plain" --post-file mysigningrequest.csr #{api_v1_certificates_url(format: :text)}
+      First certificate is your new certificate, second - intermitiate CA that had issued certificates. extract content in favorite text editor
+    %li You can verificate you
+    %blockquote openssl verify -CApath mycert.crt subca.crt ./projects/certificate_authority/public/root.crt
 
 %h1.title Listing certificates
 

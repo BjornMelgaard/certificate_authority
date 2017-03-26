@@ -2,8 +2,6 @@ class Api::V1::CertificatesController < ApplicationController
   protect_from_forgery with: :null_session
 
   def create
-    p params
-    p request.format.symbol
     CreateFromCsr.call(params, request) do
       on(:invalid) do |errors|
         render plain: errors, status: :unprocessable_entity
