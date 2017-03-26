@@ -4,11 +4,9 @@ module OcspHelpers
     request = OpenSSL::OCSP::Request.new.add_certid(cid)
 
     ocsp_uri = URI(ENV['DOMAIN'])
-    http_resp = Net::HTTP.post(
-      ocsp_uri,
-      request.to_der,
-      'Content-Type' => 'application/ocsp-response'
-    )
+    post '/', request.to_der, { 'Content-Type' => 'application/ocsp-response' }
+    require 'pry'; ::Kernel.binding.pry;
+
 
     OpenSSL::OCSP::Response.new(http_resp.body)
   end

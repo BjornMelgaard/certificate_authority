@@ -1,10 +1,12 @@
 class CreateFromCsr < Rectify::Command
-  def initialize(params)
-    @params = params
+  def initialize(params, request)
+    @format = request.format.symbol
+    @raw_csr = request.raw_post if @format == :text
   end
 
   def call
-    broadcast(:invalid, ['Invalid csr']) unless set_csr
+    return broadcast(:invalid, 'Invalid format') unless @format == :text
+    return broadcast(:invalid, 'Invalid csr') unless set_csr
     generate_certificate
     save_certificate
 
@@ -14,7 +16,7 @@ class CreateFromCsr < Rectify::Command
   private
 
   def set_csr
-    csr = OpenSSL::X509::Request.new(@params[:csr])
+    csr = OpenSSL::X509::Request.new(@raw_csr)
     return false unless csr.verify(csr.public_key)
     @csr = csr
   rescue OpenSSL::X509::RequestError
@@ -32,6 +34,13 @@ class CreateFromCsr < Rectify::Command
   end
 
   def certificate_chain
-    [@certificate, subca_cert].map(&:to_pem)
+    [@certificate, subca_cert].map { |cert| cert_to_text(cert) }.join("\n")
+  end
+
+  def cert_to_text(cert)
+    header = %i(subject issuer).map do |attr|
+      "#{attr}=#{cert.send(attr)}"
+    end
+    [header, cert.to_pem].flatten.join("\n")
   end
 end

@@ -1,3 +1,15 @@
+%h1.title Sign your certificate
+.content
+  %ol
+    %li
+      Create
+      %strong Certificate Signing Request
+      %blockquote openssl req -new -newkey rsa:2048 -subj "/C=UA/O=My Org/CN=My name" -keyout myprivate.key -out mysigningrequest.csr
+    %li
+      Upload
+      %strong Certificate Signing Request
+      %blockquote wget --header="Content-Type: text/plain" --post-file mysigningrequest.csr #{api_v1_certificates_url(format: :text)}
+
 %h1.title Listing certificates
 
 %table.table.is-striped

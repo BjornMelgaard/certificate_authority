@@ -1,11 +1,15 @@
 class Api::V1::CertificatesController < ApplicationController
+  protect_from_forgery with: :null_session
+
   def create
-    CreateFromCsr.call(params) do
+    p params
+    p request.format.symbol
+    CreateFromCsr.call(params, request) do
       on(:invalid) do |errors|
-        render json: { errors: errors }, status: :unprocessable_entity
+        render plain: errors, status: :unprocessable_entity
       end
       on(:ok) do |certificate_chain|
-        render json: { chain: certificate_chain }
+        render plain: certificate_chain
       end
     end
   end
@@ -20,4 +24,5 @@ class Api::V1::CertificatesController < ApplicationController
       end
     end
   end
+
 end

@@ -1,4 +1,4 @@
-describe 'OcspMiddleware', type: :request do
+describe 'OcspMiddleware', type: :feature do
   before do
     @issuer_cert = load_cert(:subca)
     @issuer_key  = load_private_key(:subca)
