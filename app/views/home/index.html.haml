@@ -8,11 +8,15 @@
     %li
       %input#csr_uploader{type: 'file', style:"display:none"}
       %button.button.is-small.is-tomato#csr_button Upload
-      your
-      %strong Certificate Signing Request
-      %p First certificate is your new certificate, second - intermitiate CA that had issued certificates. extract content in favorite text editor
-    %li You can verificate you
-    %blockquote openssl verify -CApath mycert.crt subca.crt ./projects/certificate_authority/public/root.crt
+      your #{content_tag :strong, 'Certificate Signing Request'}. This will downdoad your new certificate, signed by #{content_tag :strong, 'Intermitiate CA'}
+    %li
+      Now you can verificate your ceritificate through
+      = link_to 'Intermitiate', 'subca.crt', class: 'is-tomato'
+      (in most cases there a whole chain of them) and
+      = link_to 'Root', 'root.crt', class: 'is-tomato'
+    %blockquote openssl verify -CApath mycert.crt subca.crt root.crt
+    %p And also you can check #{content_tag :strong, 'OCSP status'} (you need #{link_to 'OCSP ceritificate', 'ocsp.crt', class: 'is-tomato'})
+    %blockquote openssl ocsp -issuer root.crt -issuer subca.crt -CAfile ocsp.crt -cert mycert.crt -url #{ENV['DOMAIN']}
 
 %h1.title Listing certificates
 

@@ -1,4 +1,4 @@
-downloadUrl = download = (filename, href) ->
+download = (filename, href) ->
   element = document.createElement('a')
   element.setAttribute 'href', href
   element.setAttribute 'download', filename
@@ -26,8 +26,6 @@ loaded = (evt) ->
     success: (resp) ->
       createNotification('success', 'Sertificate was created successfully')
       downloadText("#{resp.serial}.crt", resp.certificate)
-      downloadUrl("root.crt", "root.crt")
-      downloadUrl("subca.crt", "subca.crt")
 
     error:   (resp) ->
       error = resp?.responseJSON?.errors[0]
