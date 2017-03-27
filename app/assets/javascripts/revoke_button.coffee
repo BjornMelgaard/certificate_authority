@@ -1,11 +1,11 @@
 $(document).on "turbolinks:load", ->
   $('[data-revoke-button]').each ->
     button = $(this)
-    url = button.data('revoke-button')
+    serial = button.data('revoke-button')
     button.click (e)->
       button.addClass('is-loading')
       $.ajax
-        url: url,
+        url: "/api/v1/certificates/#{serial}/revoke",
         type: 'post'
         success: (resp) ->
           button.removeClass('is-loading')
@@ -13,8 +13,4 @@ $(document).on "turbolinks:load", ->
                 .text('Revoked')
         error:   (resp) ->
           console.log resp
-          notification =
-            $('<div class="notification is-danger"></div>')
-            .text('Undefined error occured')
-          $('main.container').prepend(notification)
-
+          createNotification('danger', 'Undefined error occured on revoke')

@@ -20,11 +20,10 @@ module HomePage
 
       name = revoked? ? 'Revoked' : 'Revoke'
 
-      url = urls.api_v1_certificate_revoke_path(serial: serial)
       h.content_tag :button,
                     name,
                     class: css_class,
-                    data: { 'revoke-button': url }
+                    data: { 'revoke-button': serial.to_s }
     end
   end
 end

@@ -5,6 +5,17 @@
 @import "header";
 
 main.container {
-  margin-top: 3.25rem;
+  margin-top: 2.25rem;
+}
+
+.button.is-tomato {
+  background-color: $tomato;
+  border-color: transparent;
+  color: $white;
+}
+
+#notifications {
+  margin: auto 3rem;
+  margin-top: 2.25rem;
 }
 

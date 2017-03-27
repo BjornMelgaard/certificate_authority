@@ -8,7 +8,7 @@ class Revoke < Rectify::Command
     return broadcast(:invalid, ['Already revoked']) if @certificate.revoked?
     revoke
 
-    broadcast(:ok)
+    broadcast(:ok, @certificate)
   end
 
   private

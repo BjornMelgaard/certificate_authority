@@ -13,4 +13,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
-//= require_tree .
+//
+//= require notification
+//= require csr_upload
+//= require revoke_button
