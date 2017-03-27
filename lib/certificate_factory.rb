@@ -69,7 +69,7 @@ class CertificateFactory
   def add_extensions(issuer_cert = nil)
     extensions = ExtensionsHolder.extensions_for(@role)
 
-    ef = OpenSSL::X509::ExtensionFactory.new # why do we need factory?
+    ef = OpenSSL::X509::ExtensionFactory.new
     ef.subject_certificate = @certificate
     ef.issuer_certificate = issuer_cert || @certificate
 

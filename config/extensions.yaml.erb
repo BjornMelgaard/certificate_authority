@@ -1,12 +1,12 @@
 <%
 def issuer_info(issuer_name)
   [
-    "caIssuers;URI.0 = #{ENV['DOMAIN']}/#{issuer_name}.crt",
-    "OCSP;URI.0 = #{ENV['DOMAIN']}"
+    "caIssuers;URI:#{ENV['DOMAIN']}/#{issuer_name}.crt",
+    "OCSP;URI:#{ENV['DOMAIN']}"
   ].join(',')
 end
 %>
-<% crl_info = "URI.0 = #{ENV['DOMAIN']}" %>
+<% crl_info = "URI:#{ENV['DOMAIN']}" %>
 
 root:
   critical:

@@ -1,9 +1,9 @@
 module PopulateCA
   class << self
     def call
-      root_data = generate_and_store(:root, 'Root CA')
-      generate_and_store(:subca, 'Sub CA', root_data)
-      generate_and_store(:ocsp, 'OCSP Root Responder', root_data)
+      root_data  = generate_and_store(:root, 'Root CA')
+      subca_data = generate_and_store(:subca, 'Sub CA', root_data)
+      generate_and_store(:ocsp, 'OCSP Root Responder', subca_data)
     end
 
     def generate_and_store(role, common_name, parent_data = nil)

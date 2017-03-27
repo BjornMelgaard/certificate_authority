@@ -8,8 +8,6 @@ class Certificate < ApplicationRecord
   validates :pem, presence: true
   validates :serial, presence: true
 
-  serialize :cert, CertificateSerializer
-
   def self.create_from_certificate(cert)
     create(pem: cert.to_pem, serial: cert.serial)
   end

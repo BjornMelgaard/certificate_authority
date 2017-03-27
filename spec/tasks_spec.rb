@@ -39,6 +39,6 @@ describe 'certificate_authority:populate_ca' do
     # was singed by private_key that match to this public_key
     expect(root_cert.verify(root_cert.public_key)).to  eq true
     expect(subca_cert.verify(root_cert.public_key)).to eq true
-    expect(ocsp_cert.verify(root_cert.public_key)).to  eq true
+    expect(ocsp_cert.verify(subca_cert.public_key)).to  eq true
   end
 end

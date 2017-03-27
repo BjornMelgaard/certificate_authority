@@ -16,7 +16,10 @@ feature 'Home page:' do
         window.uploadFiles()
       }
       expect(page).to have_content 'Sertificate was created successfully'
-      expect(downloads.size).to eq 1 unless Capybara.current_driver == :poltergeist
+
+      if Capybara.current_driver == :selenium_chrome
+        expect(downloads.size).to eq 1
+      end
     end.to change { Certificate.count }.by(1)
   end
 

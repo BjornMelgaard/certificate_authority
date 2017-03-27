@@ -10,9 +10,16 @@ describe 'Roles' do
   end
 
   context 'developer' do
-    it 'have right OCSP URI' do
-      ocsp_url = @developer_cert.authority_info_access.split("\n").last
-      expect(ocsp_url).to eq 'OCSP - URI://localhost:3000'
+    it 'have right aia' do
+      aia = @developer_cert.authority_info_access.split("\n")
+      ca_issuers, ocsp_url = aia
+      expect(ca_issuers).to eq 'CA Issuers - URI:http://localhost:3000/subca.crt'
+      expect(ocsp_url).to eq 'OCSP - URI:http://localhost:3000'
+    end
+
+    it 'have right crlDistributionPoints' do
+      crl_url = @developer_cert.crl_distribution_points
+      expect(crl_url).to include 'URI:http://localhost:3000'
     end
 
     it 'can create p7' do
