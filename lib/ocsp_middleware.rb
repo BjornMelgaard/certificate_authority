@@ -15,10 +15,10 @@ class OcspMiddleware
   def call(env)
     @env = env
     return @app.call(@env) unless ocsp_request?
-    ocsp_responce
+    ocsp_response
   end
 
-  def ocsp_responce
+  def ocsp_response
     return respond_with(RESPONSE_STATUS_MALFORMEDREQUEST) unless set_ocsp_request
     set_certificates
 

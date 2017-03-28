@@ -25,7 +25,6 @@ subca:
     authorityKeyIdentifier: 'keyid:always'
     authorityInfoAccess:    <%= issuer_info('root') %>
     crlDistributionPoints:  <%= crl_info %>
-    # XXX what the weird notation, had to change `IP.0=` to `IP.0:`
     nameConstraints:        'excluded;IP:0.0.0.0/0.0.0.0,excluded;IP:0:0:0:0:0:0:0:0/0:0:0:0:0:0:0:0'
 
 ocsp:
