@@ -1,6 +1,6 @@
 module Storage
-  CERT_DIR = Rails.root.join('public')
-  KEY_DIR  = Rails.root.join('private')
+  CERT_DIR = File.expand_path('../../public', __FILE__)
+  KEY_DIR  = File.expand_path('../../private', __FILE__)
 
   class << self
     def store_cert(role, cert)
@@ -21,11 +21,11 @@ module Storage
     end
 
     def cert_path(role)
-      CERT_DIR.join("#{role}.crt")
+      File.join(CERT_DIR, "#{role}.crt")
     end
 
     def key_path(role)
-      KEY_DIR.join("#{role}.key.pem")
+      File.join(KEY_DIR, "#{role}.key.pem")
     end
   end
 end

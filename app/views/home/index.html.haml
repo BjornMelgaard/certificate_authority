@@ -17,9 +17,9 @@
     %blockquote openssl verify -CApath mycert.crt subca.crt root.crt
     %p And also you can check #{content_tag :strong, 'OCSP status'} (you need #{link_to 'OCSP ceritificate', 'ocsp.crt', class: 'is-tomato'})
     %blockquote
-      cat sub-ca.crt root-ca.crt > sub-and-root.crt &&
-      openssl ocsp -issuer subca.crt -CAfile sub-and-root.crt -cert
-      server.crt -url #{ENV['DOMAIN']}
+      cat subca.crt root.crt > sub-and-root.crt &&
+      openssl ocsp -issuer subca.crt -CAfile sub-and-root.crt -text -verify_other
+      ocsp.crt -cert mycert.crt -url #{ENV['DOMAIN']}
 
 %h1.title Listing certificates
 

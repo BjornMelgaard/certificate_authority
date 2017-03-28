@@ -7,11 +7,11 @@ module HomePage
     end
 
     def name
-      subject.common_name
+      cert.subject.common_name
     end
 
     def date
-      not_before.strftime('%m/%d/%Y at %H:%M')
+      cert.not_before.strftime('%m/%d/%Y at %H:%M')
     end
 
     def revoke_button
@@ -23,7 +23,7 @@ module HomePage
       h.content_tag :button,
                     name,
                     class: css_class,
-                    data: { 'revoke-button': serial.to_s }
+                    data: { 'revoke-button': cert.serial.to_s }
     end
   end
 end

@@ -1,14 +1,8 @@
 module OcspHelpers
-  def make_ocsp_request(cert, issuer)
+  def ocsp_env_for(cert, issuer)
     cid = OpenSSL::OCSP::CertificateId.new(cert, issuer)
     request = OpenSSL::OCSP::Request.new.add_certid(cid)
-
-    ocsp_uri = URI(ENV['DOMAIN'])
-    post '/', request.to_der, { 'Content-Type' => 'application/ocsp-response' }
-    require 'pry'; ::Kernel.binding.pry;
-
-
-    OpenSSL::OCSP::Response.new(http_resp.body)
+    Rack::MockRequest.env_for('/', input: request.to_der, method: 'POST', 'CONTENT_TYPE' => 'application/ocsp-request')
   end
 end
 

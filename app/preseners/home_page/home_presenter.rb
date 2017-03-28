@@ -1,8 +1,8 @@
 module HomePage
   class HomePresenter < Rectify::Presenter
     def initialize
-      @certificates = HomePage::CertificateDecorator
-                      .for_collection(Certificate.order(created_at: :desc))
+      certs = Certificate.order(created_at: :desc).limit(50)
+      @certificates = HomePage::CertificateDecorator.for_collection(certs)
     end
 
     attr_reader :certificates

@@ -1,37 +1,35 @@
 class Certificate < ApplicationRecord
-  STATUS_GOOD    = OpenSSL::OCSP::V_CERTSTATUS_GOOD
-  STATUS_REVOKED = OpenSSL::OCSP::V_CERTSTATUS_REVOKED
+  validates :pem,
+            length: { minimum: 1000, maximum: 3000 },
+            presence: true
 
-  REASON_KEY_COMPROMISED = OpenSSL::OCSP::REVOKED_STATUS_KEYCOMPROMISE
-  REASON_UNSPECIFIED     = OpenSSL::OCSP::REVOKED_STATUS_UNSPECIFIED
+  validates :serial,
+            format: { with: /\d+/, message: 'only numbers' },
+            presence: true
 
-  validates :pem, presence: true
-  validates :serial, presence: true
-
-  def self.create_from_certificate(cert)
-    create(pem: cert.to_pem, serial: cert.serial)
+  def self.create_from_certificate(certificate)
+    create(pem: certificate.to_pem, serial: certificate.serial.to_i)
   end
 
-  def store(cert)
-    self.pem    = cert.to_pem
-    self.serial = cert.serial
+  def store(certificate)
+    self.pem    = certificate.to_pem
+    self.serial = certificate.serial.to_i
+    save!
   end
 
   def cert
     @cert ||= OpenSSL::X509::Certificate.new(pem)
   end
 
-  delegate :version,
-           :not_before,
-           :not_after,
-           :serial,
-           :subject,
-           :issuer,
-           :extensions,
-           :public_key,
-           to: :cert
+  def revoke
+    update(
+      status: OpenSSL::OCSP::V_CERTSTATUS_REVOKED,
+      reason: OpenSSL::OCSP::REVOKED_STATUS_UNSPECIFIED,
+      revoked_at: Time.zone.now
+    )
+  end
 
   def revoked?
-    status == STATUS_REVOKED
+    revoked_at.present?
   end
 end

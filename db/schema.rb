@@ -16,12 +16,13 @@ ActiveRecord::Schema.define(version: 20170319132001) do
   enable_extension "plpgsql"
 
   create_table "certificates", force: :cascade do |t|
-    t.text     "pem",        null: false
-    t.string   "serial",     null: false
-    t.integer  "status"
-    t.integer  "reason"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.text     "pem",                    null: false
+    t.string   "serial",                 null: false
+    t.integer  "status",     default: 0
+    t.integer  "reason",     default: 0
+    t.datetime "revoked_at"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
 end
