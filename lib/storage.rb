@@ -8,6 +8,7 @@ module Storage
     end
 
     def store_private_key(role, key)
+      create_dir(KEY_DIR)
       key_secure = key.export(OpenSSL::Cipher.new('AES-128-CBC'), ENV['PASSWORD'])
       open(key_path(role), 'w') { |io| io.write key_secure }
     end
@@ -26,6 +27,10 @@ module Storage
 
     def key_path(role)
       File.join(KEY_DIR, "#{role}.key.pem")
+    end
+
+    def create_dir(dirname)
+      Dir.mkdir(dirname) unless Dir.exist?(dirname)
     end
   end
 end
