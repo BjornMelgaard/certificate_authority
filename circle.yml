@@ -1,4 +1,4 @@
 dependencies:
   pre:
     - gem install bundler
-    - rake certificate_authority:populate_ca
+    - bundler exec rake certificate_authority:populate_ca
