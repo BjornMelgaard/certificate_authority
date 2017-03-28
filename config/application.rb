@@ -17,12 +17,12 @@ require 'sprockets/railtie'
 Bundler.require(*Rails.groups)
 Dotenv::Railtie.load
 
-require_relative '../lib/ocsp_middleware'
-
 module CertificateAuthority
   class Application < Rails::Application
     config.autoload_paths << Rails.root.join('lib')
     config.autoload_paths << Rails.root.join('app', 'decocators', 'concerns')
+
+    require_relative '../lib/ocsp_middleware'
 
     config.middleware.use OcspMiddleware
 

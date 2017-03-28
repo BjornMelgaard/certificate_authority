@@ -3,10 +3,18 @@ require_relative 'storage'
 class OcspMiddleware
   THIS_UPDATE = -1800
   NEXT_UPDATE = 3600
-  OCSP_CERT   = Storage.load_cert(:ocsp)
-  OCSP_KEY    = Storage.load_private_key(:ocsp)
 
   include OpenSSL::OCSP
+
+  def self.ocsp_cert
+    @ocsp_cert ||= Storage.load_cert(:ocsp)
+  end
+
+  def self.ocsp_key
+    @ocsp_key ||= Storage.load_private_key(:ocsp)
+  end
+
+  delegate :ocsp_cert, :ocsp_key, to: :class
 
   def initialize(app)
     @app = app
@@ -25,7 +33,7 @@ class OcspMiddleware
     @br = BasicResponse.new
     @request.certid.zip(@certificates).each { |cid, cert| add_status(cid, cert) }
     @br.copy_nonce(@request)
-    @br.sign(OCSP_CERT, OCSP_KEY)
+    @br.sign(ocsp_cert, ocsp_key)
 
     respond_with(RESPONSE_STATUS_SUCCESSFUL, @br)
   rescue
