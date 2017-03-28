@@ -11,7 +11,7 @@ module HomePage
     end
 
     def date
-      cert.not_before.strftime('%m/%d/%Y at %H:%M')
+      created_at.strftime('%d/%m/%Y at %H:%M')
     end
 
     def revoke_button

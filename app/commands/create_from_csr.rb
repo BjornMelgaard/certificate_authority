@@ -6,9 +6,7 @@ class CreateFromCsr < Rectify::Command
   def call
     return broadcast(:invalid, ['Invalid csr']) unless set_csr
     generate_certificate
-    save_certificate
-
-    broadcast(:ok, @certificate)
+    broadcast(:ok, save_certificate)
   end
 
   private

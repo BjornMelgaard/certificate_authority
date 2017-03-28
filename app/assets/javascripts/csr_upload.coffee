@@ -11,14 +11,23 @@ downloadText = (filename, text) ->
   href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text)
   download(filename, href)
 
-replaceMyserial = (serial) ->
-  $('.myserial').text(serial)
-
 getAsText = (readFile) ->
   reader = new FileReader
   reader.readAsText readFile, 'UTF-8'
   reader.onload = loaded
   reader.onerror = errorHandled
+
+replaceMyserial = (serial) ->
+  $('.myserial').text(serial)
+
+addToTable = (serial, common_name, created_at) ->
+  field = "<tr>
+            <td>#{serial}</td>
+            <td>#{common_name}</td>
+            <td>#{created_at}</td>
+            <td><button class='button is-danger is-pulled-right' data-revoke-button='#{serial}'>Revoke</button></td>
+          </tr>"
+  makeRevokable($('#certificates').prepend(field).find('button.button:first'))
 
 loaded = (evt) ->
   fileString = evt.target.result
@@ -30,6 +39,7 @@ loaded = (evt) ->
       createNotification('success', 'Sertificate was created successfully')
       downloadText("#{resp.serial}.crt", resp.certificate)
       replaceMyserial(resp.serial)
+      addToTable(resp.serial, resp.common_name, resp.created_at)
 
     error:   (resp) ->
       error = resp?.responseJSON?.errors[0]
