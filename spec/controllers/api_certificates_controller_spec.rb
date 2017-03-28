@@ -27,13 +27,13 @@ RSpec.describe Api::V1::CertificatesController, type: :controller do
 
       expect_json_types(serial: :string, status: :int, reason: :int)
 
-      expect(cert.status).to eq Certificate::STATUS_REVOKED
-      expect(cert.reason).to eq Certificate::REVOKED_STATUS_UNSPECIFIED
+      expect(cert.status).to eq OpenSSL::OCSP::V_CERTSTATUS_REVOKED
+      expect(cert.reason).to eq OpenSSL::OCSP::REVOKED_STATUS_UNSPECIFIED
     end
 
     it 'error if already revoked' do
-      cert = create :certificate,
-                    status: Certificate::STATUS_REVOKED
+      cert = create :certificate
+      cert.revoke
 
       expect do
         post :revoke, params: { serial: cert.serial }, as: :json

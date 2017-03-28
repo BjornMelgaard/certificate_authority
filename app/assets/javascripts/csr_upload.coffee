@@ -11,6 +11,9 @@ downloadText = (filename, text) ->
   href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text)
   download(filename, href)
 
+replaceMyserial = (serial) ->
+  $('.myserial').text(serial)
+
 getAsText = (readFile) ->
   reader = new FileReader
   reader.readAsText readFile, 'UTF-8'
@@ -26,6 +29,7 @@ loaded = (evt) ->
     success: (resp) ->
       createNotification('success', 'Sertificate was created successfully')
       downloadText("#{resp.serial}.crt", resp.certificate)
+      replaceMyserial(resp.serial)
 
     error:   (resp) ->
       error = resp?.responseJSON?.errors[0]

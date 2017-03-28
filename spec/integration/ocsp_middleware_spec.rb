@@ -1,53 +1,70 @@
 describe 'OcspMiddleware' do
   before do
+    @root_cert = load_cert(:root)
+    @ocsp_cert = load_cert(:ocsp)
+
     @issuer_cert = load_cert(:subca)
     @issuer_key  = load_private_key(:subca)
 
     @developer_cert, @developer_key = ca_factory_generate(:developer, [@issuer_cert, @issuer_key])
+    @dev_cid = OpenSSL::OCSP::CertificateId.new(@developer_cert, @issuer_cert)
   end
 
-  let(:app) { ->(env) { [200, env, "app"] } }
+  let(:app) { ->(env) { [200, env, 'app'] } }
   let(:middleware) { OcspMiddleware.new(app) }
 
-  context 'valid cert' do
-    before do
-      Certificate.create_from_certificate(@developer_cert)
+  it 'respond with status VALID if exists' do
+    Certificate.create_from_certificate(@developer_cert)
+
+    code, env, body = middleware.call ocsp_env_for(@dev_cid)
+    resp = OpenSSL::OCSP::Response.new(body[0])
+
+    assert_equal resp.status, OpenSSL::OCSP::RESPONSE_STATUS_SUCCESSFUL
+    assert resp.basic.is_a? OpenSSL::OCSP::BasicResponse
+
+    resp.basic.status.each do |(_cid, status, reason)|
+      assert_equal status, OpenSSL::OCSP::V_CERTSTATUS_GOOD
+      assert_equal reason, OpenSSL::OCSP::REVOKED_STATUS_UNSPECIFIED
     end
 
-    it 'respond with status VALID if exists' do
-      code, env = middleware.call ocsp_env_for(@developer_cert, @issuer_cert)
+    first_cert_id = resp.basic.status[0][0]
+    assert first_cert_id.cmp(@dev_cid)
+    assert first_cert_id.cmp_issuer(@dev_cid)
+    assert_equal first_cert_id.serial, @developer_cert.serial
 
-      subca = load_cert('sub-ca.crt')
-      root = load_cert('root-ca.crt')
-      cert = load_cert('server.crt')
+    resp.basic.responses.each do |resp|
+      assert resp.is_a? OpenSSL::OCSP::SingleResponse
+      assert resp.check_validity
+    end
 
-      cid = OpenSSL::OCSP::CertificateId.new(cert, subca)
-      request = OpenSSL::OCSP::Request.new.add_certid(cid)
+    store = OpenSSL::X509::Store.new
+    store.add_cert(@issuer_cert)
+    store.add_cert(@root_cert)
+    assert resp.basic.verify([@ocsp_cert], store)
+  end
 
-      # with post, work
-      ocsp_uri = URI('http://127.0.0.1:9080/')
-      http_resp = Net::HTTP.post(ocsp_uri, request.to_der, 'Content-Type' => 'application/ocsp-response')
+  it 'respond with V_CERTSTATUS_UNKNOWN if not in database' do
+    _code, _env, body = middleware.call ocsp_env_for(@dev_cid)
+    resp = OpenSSL::OCSP::Response.new(body[0])
 
-      resp = OpenSSL::OCSP::Response.new(http_resp.body)
+    assert_equal resp.status, OpenSSL::OCSP::RESPONSE_STATUS_SUCCESSFUL
+    resp.basic.status.each do |(_cid, status, reason)|
+      assert_equal status, OpenSSL::OCSP::V_CERTSTATUS_UNKNOWN
+      assert_equal reason, OpenSSL::OCSP::REVOKED_STATUS_UNSPECIFIED
+    end
+  end
 
-      assert_equal resp.status, OpenSSL::OCSP::RESPONSE_STATUS_SUCCESSFUL
-      assert resp.basic.is_a? OpenSSL::OCSP::BasicResponse
+  it 'respond with V_CERTSTATUS_REVOKED if not in database' do
+    cert = Certificate.create_from_certificate(@developer_cert)
+    cert.revoke
 
-      first_cert_id = resp.basic.status[0][0]
-      assert first_cert_id.cmp(cid)
-      assert first_cert_id.cmp_issuer(cid)
-      assert_equal first_cert_id.serial, cert.serial
+    _code, _env, body = middleware.call ocsp_env_for(@dev_cid)
+    resp = OpenSSL::OCSP::Response.new(body[0])
 
-      resp.basic.responses.each do |resp|
-        assert resp.is_a? OpenSSL::OCSP::SingleResponse
-        assert resp.check_validity
-      end
-
-      store = OpenSSL::X509::Store.new
-      store.add_cert(cert)
-      store.add_cert(subca)
-      store.add_cert(root)
-      assert resp.basic.verify([], store)
+    assert_equal resp.status, OpenSSL::OCSP::RESPONSE_STATUS_SUCCESSFUL
+    resp.basic.status.each do |(_cid, status, reason)|
+      assert_equal status, OpenSSL::OCSP::V_CERTSTATUS_REVOKED
+      assert_equal reason, OpenSSL::OCSP::REVOKED_STATUS_UNSPECIFIED
     end
   end
 end

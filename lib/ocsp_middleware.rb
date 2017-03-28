@@ -15,15 +15,26 @@ class OcspMiddleware
   def call(env)
     @env = env
     return @app.call(@env) unless ocsp_request?
+    ocsp_responce
+  end
 
-    return generate_http_response(RESPONSE_STATUS_MALFORMEDREQUEST) unless set_ocsp_request
+  def ocsp_responce
+    return respond_with(RESPONSE_STATUS_MALFORMEDREQUEST) unless set_ocsp_request
     set_certificates
-    generate_http_response(RESPONSE_STATUS_SUCCESSFUL, generate_basic_response)
+
+    @br = BasicResponse.new
+    @request.certid.zip(@certificates).each { |cid, cert| add_status(cid, cert) }
+    @br.copy_nonce(@request)
+    @br.sign(OCSP_CERT, OCSP_KEY)
+
+    respond_with(RESPONSE_STATUS_SUCCESSFUL, @br)
+  rescue
+    respond_with(RESPONSE_STATUS_INTERNALERROR)
   end
 
   private
 
-  def generate_http_response(status, data = nil)
+  def respond_with(status, data = nil)
     response_der = OpenSSL::OCSP::Response.create(status, data).to_der
     headers = { 'CONTENT_TYPE' => 'application/ocsp-response',
                 'CONTENT_LENGTH' => response_der.bytesize.to_s }
@@ -45,22 +56,10 @@ class OcspMiddleware
     @certificates = Certificate.where(serial: serials)
   end
 
-  def generate_basic_response
-    br = BasicResponse.new
-    add_statuses(br)
-    br.copy_nonce(@request)
-    br.sign(OCSP_CERT, OCSP_KEY)
-  end
-
-  def add_statuses(br)
-    @request.certid.zip(@certificates).each do |certid, cert|
-      br.add_status(certid,
-                    cert.status,
-                    cert.reason,
-                    cert.revoked_at.to_i || 0,
-                    THIS_UPDATE,
-                    NEXT_UPDATE,
-                    nil)
-    end
+  def add_status(cid, cert)
+    status = cert&.status || V_CERTSTATUS_UNKNOWN
+    reason = cert&.reason || REVOKED_STATUS_UNSPECIFIED
+    revocation_time = cert&.revoked_at&.to_i || 0
+    @br.add_status(cid, status, reason, revocation_time, THIS_UPDATE, NEXT_UPDATE, nil)
   end
 end

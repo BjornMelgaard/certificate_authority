@@ -14,12 +14,12 @@
       = link_to 'Intermitiate', 'subca.crt', class: 'is-tomato'
       (in most cases there a whole chain of them) and
       = link_to 'Root', 'root.crt', class: 'is-tomato'
-    %blockquote openssl verify -CApath mycert.crt subca.crt root.crt
+    %blockquote openssl verify -CApath <span class='myserial'>mycert</span>.crt subca.crt root.crt
     %p And also you can check #{content_tag :strong, 'OCSP status'} (you need #{link_to 'OCSP ceritificate', 'ocsp.crt', class: 'is-tomato'})
     %blockquote
       cat subca.crt root.crt > sub-and-root.crt &&
       openssl ocsp -issuer subca.crt -CAfile sub-and-root.crt -text -verify_other
-      ocsp.crt -cert mycert.crt -url #{ENV['DOMAIN']}
+      ocsp.crt -cert <span class='myserial'>mycert</span>.crt -url #{ENV['DOMAIN']}
 
 %h1.title Listing certificates
 
