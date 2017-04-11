@@ -44,7 +44,6 @@ group :development, :test do
 
   # RSpec
   gem 'rspec-rails'
-  gem 'capybara-webkit'
   gem 'poltergeist'
   gem 'selenium-webdriver'
   gem 'chromedriver-helper'
@@ -54,4 +53,4 @@ group :development, :test do
   gem 'fuubar', require: false
 end
 
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]

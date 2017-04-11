@@ -23,7 +23,7 @@ class CertificateFactory
 
   def sign_by!(parent_cert, parent_key)
     @certificate.issuer = parent_cert.subject
-    generate_key_material unless certificate_has_public_key? # can be added from_csr
+    generate_keys_unless_exists
     add_extensions(parent_cert)
     validate!
     sign(parent_key)
@@ -31,7 +31,7 @@ class CertificateFactory
 
   def selfsign!
     @certificate.issuer = @certificate.subject
-    generate_key_material # we dont expect that from_csr can be selfsigned
+    generate_keys_unless_exists
     add_extensions
     validate!
     sign
@@ -39,7 +39,8 @@ class CertificateFactory
 
   private
 
-  def generate_key_material
+  def generate_keys_unless_exists
+    return if certificate_has_public_key?
     @private_key = OpenSSL::PKey::RSA.new(2048)
     @certificate.public_key = @private_key.public_key
   end
@@ -51,9 +52,9 @@ class CertificateFactory
   end
 
   def validate!
-    %i(version not_before not_after serial)
+    %i[version not_before not_after serial]
       .each { |attr| raise RequiredAttribute, attr unless @certificate.send(attr) }
-    %i(subject issuer)
+    %i[subject issuer]
       .each { |dn| raise RequiredAttribute, dn if @certificate.send(dn).to_s.blank? }
     raise RequiredAttribute, :extensions unless @certificate.extensions.any?
     raise RequiredAttribute, :public_key unless certificate_has_public_key?

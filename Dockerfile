@@ -5,4 +5,6 @@ WORKDIR /certificate_authority
 ADD Gemfile /certificate_authority/Gemfile
 ADD Gemfile.lock /certificate_authority/Gemfile.lock
 RUN bundle install
+RUN mv /certificate_authority/config/database.docker.yml \
+      /certificate_authority/config/database.yml
 ADD . /certificate_authority

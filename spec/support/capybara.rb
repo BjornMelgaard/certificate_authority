@@ -24,7 +24,3 @@ else
   Capybara.default_driver = :poltergeist
   Capybara.javascript_driver = :poltergeist
 end
-
-Capybara::Webkit.configure do |config|
-  config.block_unknown_urls
-end
