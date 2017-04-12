@@ -22,6 +22,7 @@ gem 'rectify'
 gem 'hashie'
 gem 'font-awesome-rails'
 gem 'openssl-extensions', require: 'openssl-extensions/all'
+gem 'whenever', require: false
 
 group :development do
   gem 'web-console', '>= 3.3.0'

@@ -1,9 +1,10 @@
 default: &default
-  adapter: postgresql
+  adapter:  postgresql
   encoding: unicode
-  pool: 5
-  username: certificate_authority
-  password: certificate_authority
+  pool:     5
+  username: <%= ENV['IN_DOCKER'] ? 'postgres' : 'certificate_authority' %>
+  password: <%= ENV['IN_DOCKER'] ? '' : 'certificate_authority' %>
+  host:     <%= ENV['IN_DOCKER'] ? 'db' : 'localhost' %>
 
 development:
   <<: *default
