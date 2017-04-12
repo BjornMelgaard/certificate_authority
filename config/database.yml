@@ -17,16 +17,15 @@ test:
   <<: *default
   database: certificate_authority_test
 
-heroku: &heroku
-  adapter: postgresql
+google_cloud: &google_cloud
+  adapter:  postgresql
   encoding: unicode
-  timeout: 5000
-  database:
-  username:
-  password:
-  port:
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool:     5
+  username: postgres
+  password: ACvC2dnE
+  host:     104.155.87.185
+  database: postgresql-1-vm
 
 production:
-  <<: *heroku
+  <<: *google_cloud
 

@@ -15,15 +15,17 @@ require 'sprockets/railtie'
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
-Dotenv::Railtie.load
+Dotenv::Railtie.load unless Rails.env.production?
 
 module CertificateAuthority
   class Application < Rails::Application
-    config.autoload_paths << Rails.root.join('lib')
-    config.autoload_paths << Rails.root.join('app', 'decocators', 'concerns')
+    if Rails.env.production?
+      config.eager_load_paths << Rails.root.join('lib')
+    else
+      config.autoload_paths << Rails.root.join('lib')
+    end
 
     require_relative '../lib/ocsp_middleware'
-
     config.middleware.use OcspMiddleware
 
     # Settings in config/environments/* take precedence over those specified here.
