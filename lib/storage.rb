@@ -4,6 +4,8 @@ module Storage
 
   class << self
     def store_cert(role, cert)
+      p CERT_DIR
+      p KEY_DIR
       open(cert_path(role), 'w') { |io| io.write cert.to_pem }
     end
 
