@@ -28,8 +28,7 @@ module CertificateAuthority
     require_relative '../lib/ocsp_middleware'
     config.middleware.use OcspMiddleware
 
-    # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration should go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded.
+    logger.info 'Creating certificates' # on heroku filesystem is ephemeral
+    PopulateCA.call
   end
 end
