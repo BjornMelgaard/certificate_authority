@@ -30,7 +30,6 @@ module CertificateAuthority
 
     config.after_initialize do
       # on heroku filesystem is ephemeral
-      # require_relative '../lib/populate_ca'
       PopulateCA.call
     end
   end
