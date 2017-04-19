@@ -17,15 +17,21 @@ test:
   <<: *default
   database: certificate_authority_test
 
-google_cloud: &google_cloud
-  adapter:  postgresql
+# Openshift
+<% user       = ENV.key?('POSTGRESQL_ADMIN_PASSWORD') ? 'root' : ENV['POSTGRESQL_USER'] %>
+<% password   = ENV.key?('POSTGRESQL_ADMIN_PASSWORD') ? ENV['POSTGRESQL_ADMIN_PASSWORD'] : ENV['POSTGRESQL_PASSWORD'] %>
+<% db_service = ENV.fetch('DATABASE_SERVICE_NAME','').upcase %>
+
+openshift: &openshift
+  adapter: postgresql
   encoding: unicode
-  pool:     5
-  username: postgres
-  password: ACvC2dnE
-  host:     104.155.87.185
-  database: postgresql-1-vm
+  pool: <%= ENV['POSTGRESQL_MAX_CONNECTIONS'] || 5 %>
+  username: <%= user %>
+  password: <%= password %>
+  host: <%= ENV['#{db_service}_SERVICE_HOST'] %>
+  port: <%= ENV['#{db_service}_SERVICE_PORT'] %>
+  database: <%= ENV['POSTGRESQL_DATABASE'] %>
 
 production:
-  <<: *google_cloud
+  <<: *openshift
 
