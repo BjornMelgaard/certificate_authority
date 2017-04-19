@@ -50,8 +50,8 @@ class OcspMiddleware
   end
 
   def ocsp_request?
-    logger.debug @env['REQUEST_METHOD']
-    logger.debug @env['CONTENT_TYPE']
+    Rails.logger.debug @env['REQUEST_METHOD']
+    Rails.logger.debug @env['CONTENT_TYPE']
     @env['REQUEST_METHOD'] == 'POST' && @env['CONTENT_TYPE'] == 'application/ocsp-request'
   end
 
