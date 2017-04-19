@@ -17,21 +17,16 @@ test:
   <<: *default
   database: certificate_authority_test
 
-# Openshift
-<% user       = ENV.key?('POSTGRESQL_ADMIN_PASSWORD') ? 'root' : ENV['POSTGRESQL_USER'] %>
-<% password   = ENV.key?('POSTGRESQL_ADMIN_PASSWORD') ? ENV['POSTGRESQL_ADMIN_PASSWORD'] : ENV['POSTGRESQL_PASSWORD'] %>
-<% db_service = ENV.fetch('DATABASE_SERVICE_NAME','').upcase %>
-
-openshift: &openshift
-  adapter: postgresql
+heroku: &heroku
+  adapter:  postgresql
   encoding: unicode
-  pool: <%= ENV['POSTGRESQL_MAX_CONNECTIONS'] || 5 %>
-  username: <%= user %>
-  password: <%= password %>
-  host: <%= ENV['#{db_service}_SERVICE_HOST'] %>
-  port: <%= ENV['#{db_service}_SERVICE_PORT'] %>
-  database: <%= ENV['POSTGRESQL_DATABASE'] %>
+  timeout:  5000
+  database: ddma89j0a1f85a
+  username: uttcjhqxyhgtqw
+  password: d108c995f5cbf14bd45550344cb2b1a58076f98ff48ace391d17219536498417
+  port:     5432
+  pool:     <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 production:
-  <<: *openshift
+  <<: *heroku
 
