@@ -15,7 +15,7 @@
       (in most cases there a whole chain of them) and
       = presenter.cert_link 'Root', 'root.crt'
     %blockquote openssl verify -CApath <span class='myserial'>mycert</span>.crt subca.crt root.crt
-    %p And also you can check #{content_tag :strong, 'OCSP status'} (you need #{presenter.cert_link('OCSP ceritificate', 'ocsp.crt')}
+    %p And also you can check #{content_tag :strong, 'OCSP status'} (you need #{presenter.cert_link('OCSP ceritificate', 'ocsp.crt')})
     %blockquote
       cat subca.crt root.crt > sub-and-root.crt &&
       openssl ocsp -issuer subca.crt -CAfile sub-and-root.crt -text -verify_other
