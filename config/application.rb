@@ -28,9 +28,10 @@ module CertificateAuthority
     require_relative '../lib/ocsp_middleware'
     config.middleware.use OcspMiddleware
 
+    # on heroku filesystem is ephemeral
+    # so `rake certificate_authority::populate_ca` is not working
     config.after_initialize do
-      # on heroku filesystem is ephemeral
-      PopulateCA.call
+      PopulateCA.call if Rails.env.production?
     end
   end
 end

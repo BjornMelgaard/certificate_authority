@@ -1,4 +1,5 @@
 require 'hashie/mash'
+require_relative 'ocsp_helpers'
 
 module ExtensionsHolder
   class << self

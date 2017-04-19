@@ -22,20 +22,20 @@ class OcspMiddleware
 
   def call(env)
     @env = env
-    return @app.call(@env) unless ocsp_request?
-    ocsp_response
+    log_env
+    ocsp_request? ? ocsp_response : @app.call(@env)
   end
 
   def ocsp_response
-    return respond_with(RESPONSE_STATUS_MALFORMEDREQUEST) unless set_ocsp_request
-    set_certificates
+    set_ocsp_request
+    return respond_with(RESPONSE_STATUS_MALFORMEDREQUEST) unless @request
 
-    @br = BasicResponse.new
-    @request.certid.zip(@certificates).each { |cid, cert| add_status(cid, cert) }
-    @br.copy_nonce(@request)
-    @br.sign(ocsp_cert, ocsp_key)
+    basic_responce = BasicResponse.new
+    add_statuses(basic_responce)
+    basic_responce.copy_nonce(@request)
+    basic_responce.sign(ocsp_cert, ocsp_key)
 
-    respond_with(RESPONSE_STATUS_SUCCESSFUL, @br)
+    respond_with(RESPONSE_STATUS_SUCCESSFUL, basic_responce)
   rescue
     respond_with(RESPONSE_STATUS_INTERNALERROR)
   end
@@ -50,26 +50,43 @@ class OcspMiddleware
   end
 
   def ocsp_request?
-    Rails.logger.debug @env['REQUEST_METHOD']
-    Rails.logger.debug @env['CONTENT_TYPE']
-    @env['REQUEST_METHOD'] == 'POST' && @env['CONTENT_TYPE'] == 'application/ocsp-request'
+    @env['REQUEST_METHOD'] == 'POST' && \
+      @env['CONTENT_TYPE'] == 'application/ocsp-request'
   end
 
   def set_ocsp_request
     @request = Request.new(@env['rack.input'].read)
   rescue OCSPError
-    false
+    @request = nil
   end
 
-  def set_certificates
+  def add_statuses(basic_responce)
+    certificates = certificates_from_request
+    @request.certid.zip(certificates).each do |cid, cert|
+      add_status(basic_responce, cid, cert)
+    end
+  end
+
+  def certificates_from_request
     serials = @request.certid.map(&:serial).map(&:to_i)
-    @certificates = Certificate.where(serial: serials)
+    Certificate.where(serial: serials)
   end
 
-  def add_status(cid, cert)
+  def add_status(basic_responce, cid, cert)
     status = cert&.status || V_CERTSTATUS_UNKNOWN
     reason = cert&.reason || REVOKED_STATUS_UNSPECIFIED
     revocation_time = cert&.revoked_at&.to_i || 0
-    @br.add_status(cid, status, reason, revocation_time, THIS_UPDATE, NEXT_UPDATE, nil)
+    basic_responce.add_status(cid,
+                              status,
+                              reason,
+                              revocation_time,
+                              THIS_UPDATE,
+                              NEXT_UPDATE,
+                              nil)
+  end
+
+  def log_env
+    Rails.logger.debug "OCSP Middleware: REQUEST_METHOD=#{@env['REQUEST_METHOD']}"
+    Rails.logger.debug "OCSP Middleware: CONTENT_TYPE=#{@env['CONTENT_TYPE']}"
   end
 end

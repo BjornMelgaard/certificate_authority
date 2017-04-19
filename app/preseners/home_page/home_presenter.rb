@@ -6,5 +6,9 @@ module HomePage
     end
 
     attr_reader :certificates
+
+    def cert_link(name, path)
+      link_to name, path, class: 'is-tomato'
+    end
   end
 end

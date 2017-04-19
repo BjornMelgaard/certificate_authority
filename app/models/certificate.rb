@@ -23,8 +23,8 @@ class Certificate < ApplicationRecord
 
   def revoke
     update(
-      status: OpenSSL::OCSP::V_CERTSTATUS_REVOKED,
-      reason: OpenSSL::OCSP::REVOKED_STATUS_UNSPECIFIED,
+      status:     OpenSSL::OCSP::V_CERTSTATUS_REVOKED,
+      reason:     OpenSSL::OCSP::REVOKED_STATUS_UNSPECIFIED,
       revoked_at: Time.zone.now
     )
   end

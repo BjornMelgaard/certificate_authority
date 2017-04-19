@@ -50,20 +50,22 @@ errorHandled = (evt) ->
   console.log evt
   createNotification('danger', 'Undefined error occured')
 
-uploader = btn = null
-
 window.uploadFiles = ->
-  file = uploader[0].files[0]
+  file = window.uploader[0].files[0]
   return unless file
   return createNotification('danger', 'File is too big') if file.size > 20000
   getAsText(file)
 
+resetUploader = ->
+  uploader[0].type = ''
+  uploader[0].type = 'file'
+
 $(document).on "turbolinks:load", ->
-  uploader = $('#csr_uploader')
+  window.uploader = $('#csr_uploader')
   btn = $('#csr_button')
   btn.click ->
     uploader.click()
     uploader.change ->
       uploader.off()
-      do window.uploadFiles
-
+      window.uploadFiles()
+      resetUploader()
