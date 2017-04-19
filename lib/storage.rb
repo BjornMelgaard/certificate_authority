@@ -4,15 +4,13 @@ module Storage
 
   class << self
     def store_cert(role, cert)
-      p CERT_DIR
-      p KEY_DIR
-      open(cert_path(role), 'w') { |io| io.write cert.to_pem }
+      File.open(cert_path(role), 'w') { |io| io.write cert.to_pem }
     end
 
     def store_private_key(role, key)
       create_dir(KEY_DIR)
       key_secure = key.export(OpenSSL::Cipher.new('AES-128-CBC'), ENV['PASSWORD'])
-      open(key_path(role), 'w') { |io| io.write key_secure }
+      File.open(key_path(role), 'w') { |io| io.write key_secure }
     end
 
     def load_cert(role)
