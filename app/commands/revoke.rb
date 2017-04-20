@@ -4,7 +4,8 @@ class Revoke < Rectify::Command
   end
 
   def call
-    return broadcast(:invalid, ['Invalid certificate']) unless set_certificate
+    set_certificate
+    return broadcast(:invalid, ['Invalid certificate']) unless @certificate
     return broadcast(:invalid, ['Already revoked']) if @certificate.revoked?
     @certificate.revoke
 

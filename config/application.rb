@@ -25,7 +25,7 @@ module CertificateAuthority
       config.autoload_paths << Rails.root.join('lib')
     end
 
-    require_relative '../lib/ocsp_middleware'
+    require Rails.root.join('app', 'middleware', 'ocsp_middleware')
     config.middleware.use OcspMiddleware
 
     # on heroku filesystem is ephemeral

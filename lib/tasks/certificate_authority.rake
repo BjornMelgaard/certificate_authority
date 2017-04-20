@@ -3,4 +3,9 @@ namespace :certificate_authority do
   task populate_ca: :environment do
     PopulateCA.call
   end
+
+  desc 'Run CertificateCleanupJob'
+  task cleanup_certificates: :environment do
+    CertificateCleanupJob.perform_now
+  end
 end

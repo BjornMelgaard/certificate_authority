@@ -1,7 +1,0 @@
-env: flex
-runtime: custom
-entrypoint: bundle exec rails server -p $PORT
-env_variables:
-  SECRET_KEY_BASE: 'blipblapblup'
-  PASSWORD:        'password'
-  DOMAIN:          'http://localhost:3000'

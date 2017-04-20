@@ -4,7 +4,8 @@ class CreateFromCsr < Rectify::Command
   end
 
   def call
-    return broadcast(:invalid, ['Invalid csr']) unless set_csr
+    set_csr
+    return broadcast(:invalid, ['Invalid csr']) unless @csr
     generate_certificate
     broadcast(:ok, save_certificate)
   end
@@ -13,12 +14,11 @@ class CreateFromCsr < Rectify::Command
 
   def set_csr
     csr = @params[:csr]
-    return false unless csr
     csr = OpenSSL::X509::Request.new(csr)
-    return false unless csr.verify(csr.public_key)
+    return unless csr.verify(csr.public_key)
     @csr = csr
   rescue OpenSSL::X509::RequestError
-    return false
+    @csr = nil
   end
 
   def generate_certificate
