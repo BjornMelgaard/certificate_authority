@@ -14,12 +14,12 @@
       = presenter.cert_link 'Intermitiate', 'subca.crt'
       (in most cases there a whole chain of them) and
       = presenter.cert_link 'Root', 'root.crt'
-    %blockquote openssl verify -CApath <span class='myserial'>mycert</span>.crt subca.crt root.crt
+    %blockquote openssl verify -CAfile root.crt -CApath <span class='myserial'>mycert</span>.crt subca.crt root.crt
     %p And also you can check #{content_tag :strong, 'OCSP status'} (you need #{presenter.cert_link('OCSP ceritificate', 'ocsp.crt')})
     %blockquote
       cat subca.crt root.crt > sub-and-root.crt &&
       openssl ocsp -issuer subca.crt -CAfile sub-and-root.crt -text -verify_other
-      ocsp.crt -cert <span class='myserial'>mycert</span>.crt -url #{OcspHelpers.ocsp_domain} -header "HOST" "#{OcspHelpers.ocsp_host}"
+      ocsp.crt -cert <span class='myserial'>mycert</span>.crt -url #{OcspHelpers.ocsp_domain} -header "HOST=#{OcspHelpers.ocsp_host}"
 
 %h1.title Listing certificates
 
