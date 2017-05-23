@@ -30,8 +30,11 @@ module CertificateAuthority
 
     # on heroku filesystem is ephemeral
     # so `rake certificate_authority::populate_ca` is not working
-    config.after_initialize do
-      PopulateCA.call if Rails.env.production?
+    if Rails.env.production?
+      config.after_initialize do
+        Rails.logger.debug 'Gonna create certificates'
+        PopulateCA.call
+      end
     end
   end
 end
