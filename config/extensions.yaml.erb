@@ -8,6 +8,7 @@ end
 %>
 <% crl_info = "URI:#{OcspHelpers.ocsp_domain}" %>
 
+# Internal certificates
 root:
   critical:
     basicConstraints: 'CA:TRUE'
@@ -36,6 +37,7 @@ ocsp:
     extendedKeyUsage:       'OCSPSigning'
     noCheck:                'yes'
 
+# Certificate extensions from Openssl cookbook
 server:
   critical:
     basicConstraints: 'CA:false'
@@ -58,6 +60,7 @@ client:
     authorityInfoAccess:    <%= issuer_info('subca') %>
     crlDistributionPoints:  <%= crl_info %>
 
+# Common certificate extensions
 developer:
   critical:
     basicConstraints: 'CA:false'
