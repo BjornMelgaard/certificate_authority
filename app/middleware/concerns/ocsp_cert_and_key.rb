@@ -4,14 +4,16 @@ module OcspCertAndKey
   extend ActiveSupport::Concern
 
   included do
-    def self.ocsp_cert
+    delegate :ocsp_cert, :ocsp_key, to: :class
+  end
+
+  module ClassMethods
+    def ocsp_cert
       @ocsp_cert ||= Storage.load_cert(:ocsp)
     end
 
-    def self.ocsp_key
+    def ocsp_key
       @ocsp_key ||= Storage.load_private_key(:ocsp)
     end
-
-    delegate :ocsp_cert, :ocsp_key, to: :class
   end
 end

@@ -22,7 +22,7 @@ class CreateFromCsr < Rectify::Command
   end
 
   def generate_certificate
-    generator = CertificateFactory.from_csr(:server, @csr)
+    generator = CertificateFactory.from_csr(:developer, @csr)
     generator.sign_by!(subca_cert, subca_key)
     @certificate = generator.certificate
   end

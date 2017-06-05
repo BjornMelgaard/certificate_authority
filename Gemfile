@@ -15,7 +15,6 @@ gem 'coffee-rails', '~> 4.2'
 gem 'jquery-rails'
 gem 'turbolinks', '~> 5'
 gem 'haml-rails'
-gem 'active_model_serializers'
 
 gem 'bulma-rails'
 gem 'rectify'
@@ -52,6 +51,8 @@ group :development, :test do
   gem 'shoulda-matchers'
   gem 'database_cleaner'
   gem 'fuubar', require: false
+
+  gem 'railroady' # uml diagrams
 end
 
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
